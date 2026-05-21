@@ -1,0 +1,150 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light Claude-style palette: warm cream backgrounds, deep ink text, terracotta accent */
+    --background: 36 33% 97%;        /* #faf7f2 — warm cream */
+    --foreground: 28 25% 13%;        /* #2a221b — deep ink */
+    --card: 0 0% 100%;               /* pure white card */
+    --card-foreground: 28 25% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 28 25% 13%;
+    --primary: 16 75% 45%;           /* #c95830 — terracotta */
+    --primary-foreground: 36 33% 98%;
+    --secondary: 36 20% 94%;         /* #f1ece4 — soft cream */
+    --secondary-foreground: 28 25% 20%;
+    --muted: 36 20% 94%;
+    --muted-foreground: 28 12% 42%;  /* #71655a — muted brown */
+    --accent: 30 50% 92%;            /* #f1e6d6 — warm accent */
+    --accent-foreground: 16 75% 35%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 36 15% 88%;            /* subtle warm border */
+    --input: 36 15% 88%;
+    --ring: 16 75% 45%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 28 18% 8%;
+    --foreground: 36 25% 92%;
+    --card: 28 14% 11%;
+    --card-foreground: 36 25% 92%;
+    --popover: 28 14% 11%;
+    --popover-foreground: 36 25% 92%;
+    --primary: 16 80% 55%;
+    --primary-foreground: 28 18% 8%;
+    --secondary: 28 10% 16%;
+    --secondary-foreground: 36 25% 92%;
+    --muted: 28 10% 16%;
+    --muted-foreground: 30 10% 60%;
+    --accent: 28 14% 18%;
+    --accent-foreground: 16 80% 70%;
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 28 10% 20%;
+    --input: 28 10% 20%;
+    --ring: 16 80% 55%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: 'rlig' 1, 'calt' 1, 'ss01' 1;
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  /* Selection */
+  ::selection {
+    @apply bg-primary/20 text-foreground;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply backdrop-blur-xl bg-white/70 dark:bg-white/5 border border-border/40;
+  }
+
+  .soft-shadow {
+    box-shadow: 0 1px 2px 0 rgba(28, 25, 23, 0.04), 0 1px 3px 0 rgba(28, 25, 23, 0.06);
+  }
+
+  .elevated-shadow {
+    box-shadow: 0 1px 2px rgba(28, 25, 23, 0.04), 0 4px 12px rgba(28, 25, 23, 0.06), 0 16px 32px -8px rgba(28, 25, 23, 0.08);
+  }
+
+  .glow {
+    box-shadow: 0 0 60px 0 rgba(201, 88, 48, 0.25);
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-orange-700 via-orange-600 to-amber-600;
+  }
+
+  .text-gradient-warm {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600;
+  }
+
+  .grid-pattern {
+    background-image:
+      linear-gradient(to right, rgba(201, 88, 48, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(201, 88, 48, 0.04) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  .dark .grid-pattern {
+    background-image:
+      linear-gradient(to right, rgba(252, 165, 91, 0.06) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(252, 165, 91, 0.06) 1px, transparent 1px);
+  }
+
+  .dot-pattern {
+    background-image: radial-gradient(circle, rgba(201, 88, 48, 0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+}
+
+@layer utilities {
+  .animate-shimmer-bg {
+    background: linear-gradient(
+      to right,
+      hsl(var(--muted)) 4%,
+      hsl(var(--muted-foreground) / 0.2) 25%,
+      hsl(var(--muted)) 36%
+    );
+    background-size: 1000px 100%;
+    animation: shimmer 2s linear infinite;
+  }
+
+  .bg-cream-gradient {
+    background: linear-gradient(180deg, #faf7f2 0%, #f5f0e6 100%);
+  }
+
+  .bg-warm-gradient {
+    background: radial-gradient(ellipse at top, rgba(251, 191, 36, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(201, 88, 48, 0.08) 0%, transparent 50%),
+                #faf7f2;
+  }
+}

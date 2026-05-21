@@ -1,0 +1,454 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  FOUNDER
+  SPECIALIST
+  MENTOR
+  ADMIN
+}
+
+enum StartupStage {
+  IDEA
+  MVP
+  EARLY_TRACTION
+  REVENUE
+  SCALING
+}
+
+enum Sector {
+  FINTECH
+  EDTECH
+  HEALTHTECH
+  AI
+  WEB3
+  SAAS
+  ECOMMERCE
+  MARKETPLACE
+  GAMING
+  DEEPTECH
+  OTHER
+}
+
+enum ListingType {
+  FULL_TIME
+  CONTRACT
+  COFOUNDER
+  ADVISOR
+}
+
+enum SpecialistRole {
+  CTO
+  DEVELOPER
+  DESIGNER
+  SALES
+  MARKETING
+  PRODUCT_MANAGER
+  AI_ENGINEER
+  FINANCE
+  OPERATIONS
+  BIZDEV
+}
+
+enum ExperienceLevel {
+  JUNIOR
+  MIDDLE
+  SENIOR
+  LEAD
+}
+
+enum SwipeDirection {
+  LIKE
+  PASS
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum InvestorReadiness {
+  NOT_READY
+  ALMOST_READY
+  INVESTOR_READY
+}
+
+enum ScoreCategory {
+  WEAK
+  AVERAGE
+  PROMISING
+  HIGH_POTENTIAL
+  VC_BACKABLE
+}
+
+enum NotificationType {
+  MATCH
+  TASK_ASSIGNED
+  TASK_DEADLINE
+  SPRINT_STARTED
+  MENTOR_FEEDBACK
+  AI_RECOMMENDATION
+  BADGE_EARNED
+  GENERIC
+}
+
+enum NewsSource {
+  ADMIN
+  RSS
+  USER
+}
+
+enum NewsStatus {
+  PENDING
+  PUBLISHED
+  REJECTED
+}
+
+model User {
+  id              String   @id @default(cuid())
+  firebaseUid     String   @unique
+  email           String   @unique
+  displayName     String?
+  avatarUrl       String?
+  primaryRole     Role     @default(FOUNDER)
+  locale          String   @default("uz")
+  verifiedFounder Boolean  @default(false)
+  isAdmin         Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  lastLoginAt     DateTime @default(now())
+
+  founderProfile    FounderProfile?
+  specialistProfile SpecialistProfile?
+  mentorProfile     MentorProfile?
+
+  ownedStartups   Startup[]        @relation("StartupFounder")
+  mentoredStartups Startup[]       @relation("StartupMentor")
+  memberships     StartupMember[]
+  applications    Application[]
+  swipesGiven     Swipe[]          @relation("Swiper")
+  swipesReceived  Swipe[]          @relation("Target")
+  matches         Match[]          @relation("MatchUser")
+  tasksAssigned   Task[]           @relation("TaskAssignee")
+  tasksCreated    Task[]           @relation("TaskCreator")
+  mentorReviews   MentorReview[]   @relation("ReviewMentor")
+  notifications   Notification[]
+  badges          UserBadge[]
+  streak          Streak?
+  newsSubmissions NewsItem[]       @relation("NewsAuthor")
+  adminLogs       AdminLog[]
+  xp              Int              @default(0)
+  level           Int              @default(1)
+}
+
+model FounderProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio       String?  @db.Text
+  linkedin  String?
+  twitter   String?
+  website   String?
+  location  String?
+  createdAt DateTime @default(now())
+}
+
+model SpecialistProfile {
+  id              String           @id @default(cuid())
+  userId          String           @unique
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio             String?          @db.Text
+  location        String?
+  timezone        String?
+  englishLevel    String?
+  experienceYears Int              @default(0)
+  primaryRoles    SpecialistRole[]
+  skills          String[]
+  sectors         Sector[]
+  level           ExperienceLevel  @default(MIDDLE)
+  linkedin        String?
+  github          String?
+  portfolio       String?
+  twitter         String?
+  resumeUrl       String?
+  resumeText      String?          @db.Text
+  workSamples     Json?
+  onchainCredits  Json?
+  aiScore         Int?
+  aiSummary       String?          @db.Text
+  available       Boolean          @default(true)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model MentorProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio             String?  @db.Text
+  expertise       String[]
+  sectors         Sector[]
+  yearsExperience Int      @default(0)
+  linkedin        String?
+  invitedBy       String?
+  createdAt       DateTime @default(now())
+}
+
+model Startup {
+  id              String       @id @default(cuid())
+  founderId       String
+  founder         User         @relation("StartupFounder", fields: [founderId], references: [id], onDelete: Cascade)
+  mentorId        String?
+  mentor          User?        @relation("StartupMentor", fields: [mentorId], references: [id], onDelete: SetNull)
+  name            String
+  logoUrl         String?
+  pitch           String       @db.Text
+  problem         String       @db.Text
+  solution        String       @db.Text
+  targetAudience  String       @db.Text
+  revenueModel    String       @db.Text
+  competitors     String?      @db.Text
+  hasMVP          Boolean      @default(false)
+  teamSize        Int          @default(1)
+  stage           StartupStage @default(IDEA)
+  sector          Sector       @default(OTHER)
+  location        String?
+  fundraising     String?
+  equityOffered   Float?
+  cofounderNeeded String[]
+  aiScore         Int?
+  scoreCategory   ScoreCategory?
+  scoreMetrics    Json?
+  aiFeedback      String?      @db.Text
+  investorReady   InvestorReadiness @default(NOT_READY)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  members      StartupMember[]
+  listings     Listing[]
+  sprints      Sprint[]
+  tasks        Task[]
+  swipes       Swipe[]
+  matches      Match[]
+  reviews      MentorReview[]
+  metricsLogs  MetricsLog[]
+}
+
+model StartupMember {
+  id         String          @id @default(cuid())
+  startupId  String
+  startup    Startup         @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role       SpecialistRole
+  level      ExperienceLevel @default(MIDDLE)
+  equity     Float?
+  joinedAt   DateTime        @default(now())
+
+  @@unique([startupId, userId])
+}
+
+model Listing {
+  id          String      @id @default(cuid())
+  startupId   String
+  startup     Startup     @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  type        ListingType
+  role        SpecialistRole
+  title       String
+  description String      @db.Text
+  skills      String[]
+  level       ExperienceLevel @default(MIDDLE)
+  equity      Float?
+  remote      Boolean     @default(true)
+  active      Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+
+  applications Application[]
+}
+
+model Application {
+  id        String   @id @default(cuid())
+  listingId String
+  listing   Listing  @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String?  @db.Text
+  status    String   @default("pending")
+  createdAt DateTime @default(now())
+
+  @@unique([listingId, userId])
+}
+
+model Swipe {
+  id        String         @id @default(cuid())
+  swiperId  String
+  swiper    User           @relation("Swiper", fields: [swiperId], references: [id], onDelete: Cascade)
+  targetId  String?
+  target    User?          @relation("Target", fields: [targetId], references: [id], onDelete: Cascade)
+  startupId String?
+  startup   Startup?       @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  direction SwipeDirection
+  createdAt DateTime       @default(now())
+}
+
+model Match {
+  id          String   @id @default(cuid())
+  userAId     String
+  userA       User     @relation("MatchUser", fields: [userAId], references: [id], onDelete: Cascade)
+  userBId     String
+  startupId   String?
+  startup     Startup? @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  score       Int
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@unique([userAId, userBId, startupId])
+}
+
+model Sprint {
+  id          String   @id @default(cuid())
+  startupId   String
+  startup     Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  name        String
+  goal        String   @db.Text
+  startDate   DateTime
+  endDate     DateTime
+  completed   Boolean  @default(false)
+  completionRate Float @default(0)
+  createdById String?
+  createdAt   DateTime @default(now())
+  tasks       Task[]
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  startupId   String
+  startup     Startup      @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  sprintId    String?
+  sprint      Sprint?      @relation(fields: [sprintId], references: [id])
+  title       String
+  description String?      @db.Text
+  status      TaskStatus   @default(TODO)
+  priority    TaskPriority @default(MEDIUM)
+  assigneeId  String?
+  assignee    User?        @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  creatorId   String
+  creator     User         @relation("TaskCreator", fields: [creatorId], references: [id])
+  dueDate     DateTime?
+  aiGenerated Boolean      @default(false)
+  attachments Json?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model MentorReview {
+  id          String   @id @default(cuid())
+  startupId   String
+  startup     Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  mentorId    String
+  mentor      User     @relation("ReviewMentor", fields: [mentorId], references: [id], onDelete: Cascade)
+  weekOf      DateTime
+  score       Int
+  progress    String?  @db.Text
+  blockers    String?  @db.Text
+  teamHealth  Int?
+  kpiStatus   String?  @db.Text
+  nextSteps   String?  @db.Text
+  freeText    String?  @db.Text
+  videoUrl    String?
+  createdAt   DateTime @default(now())
+}
+
+model MetricsLog {
+  id        String   @id @default(cuid())
+  startupId String
+  startup   Startup  @relation(fields: [startupId], references: [id], onDelete: Cascade)
+  date      DateTime @default(now())
+  mrr       Float?
+  users     Int?
+  retention Float?
+  notes     String?  @db.Text
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  title     String
+  body      String?
+  link      String?
+  read      Boolean          @default(false)
+  createdAt DateTime         @default(now())
+}
+
+model Badge {
+  id          String      @id @default(cuid())
+  code        String      @unique
+  name        String
+  description String
+  icon        String
+  xpReward    Int         @default(50)
+  users       UserBadge[]
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId  String
+  badge    Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  earnedAt DateTime @default(now())
+
+  @@unique([userId, badgeId])
+}
+
+model Streak {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentDays Int      @default(0)
+  longestDays Int      @default(0)
+  lastActiveAt DateTime @default(now())
+}
+
+model NewsItem {
+  id          String     @id @default(cuid())
+  title       String
+  summary     String?    @db.Text
+  content     String?    @db.Text
+  url         String?
+  imageUrl    String?
+  source      NewsSource
+  authorId    String?
+  author      User?      @relation("NewsAuthor", fields: [authorId], references: [id])
+  status      NewsStatus @default(PUBLISHED)
+  tags        String[]
+  publishedAt DateTime   @default(now())
+  createdAt   DateTime   @default(now())
+}
+
+model AdminLog {
+  id        String   @id @default(cuid())
+  adminId   String
+  admin     User     @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  action    String
+  target    String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+}
