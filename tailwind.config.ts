@@ -44,38 +44,63 @@ const config: Config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-        brand: {
-          50: '#fdf7f0',
-          100: '#faecda',
-          200: '#f5d6b0',
-          300: '#eeb87d',
-          400: '#e69654',
-          500: '#df7a35',
-          600: '#c95830',
-          700: '#a64228',
-          800: '#853625',
-          900: '#6c2e21',
-          950: '#3a160e',
+        // startupgarage.uz palette — only TWO brand colors: one purple, one dark
+        sg: {
+          purple: '#5E3EFF',
+          'purple-light': '#5E3EFF',
+          'purple-dark': '#5E3EFF',
+          dark: '#0A0E2E',
+          'dark-card': '#0A0E2E',
+          ink: '#0A0E2E',
+        },
+        navy: {
+          50: '#EEF0FF',
+          100: '#5E3EFF',
+          200: '#5E3EFF',
+          300: '#5E3EFF',
+          400: '#5E3EFF',
+          500: '#5E3EFF',
+          600: '#5E3EFF',
+          700: '#0A0E2E',
+          800: '#0A0E2E',
+          900: '#0A0E2E',
+          950: '#0A0E2E',
+        },
+        electric: {
+          DEFAULT: '#5E3EFF',
+          50: '#EEF0FF',
+          100: '#5E3EFF',
+          200: '#5E3EFF',
+          300: '#5E3EFF',
+          400: '#5E3EFF',
+          500: '#5E3EFF',
+          600: '#5E3EFF',
+        },
+        success: {
+          DEFAULT: '#3FE078',
+          50: '#E6FBEE',
+          100: '#C2F5D5',
+          200: '#88EBA9',
+          300: '#3FE078',
+          400: '#23C95F',
+          500: '#1AA84E',
         },
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)',
+        '3xl': '2rem',
+        '4xl': '2.5rem',
       },
       fontFamily: {
         sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
         display: ['var(--font-display)', 'system-ui', 'sans-serif'],
+        serif: ['var(--font-serif)', 'Georgia', 'serif'],
       },
       backgroundImage: {
-        'gradient-mesh':
-          'radial-gradient(at 27% 37%, hsla(38, 92%, 75%, 0.35) 0px, transparent 50%), radial-gradient(at 97% 21%, hsla(16, 75%, 70%, 0.25) 0px, transparent 50%), radial-gradient(at 52% 99%, hsla(28, 80%, 80%, 0.25) 0px, transparent 50%), radial-gradient(at 10% 29%, hsla(45, 88%, 78%, 0.25) 0px, transparent 50%), radial-gradient(at 97% 96%, hsla(20, 90%, 75%, 0.25) 0px, transparent 50%), radial-gradient(at 33% 50%, hsla(40, 70%, 80%, 0.2) 0px, transparent 50%), radial-gradient(at 79% 53%, hsla(12, 85%, 78%, 0.2) 0px, transparent 50%)',
-        'gradient-brand':
-          'linear-gradient(135deg, #c95830 0%, #df7a35 50%, #eeb87d 100%)',
-        'gradient-warm':
-          'linear-gradient(135deg, #f59e0b 0%, #ea580c 50%, #c95830 100%)',
-        'gradient-glow':
-          'linear-gradient(135deg, rgba(201, 88, 48, 0.12), rgba(245, 158, 11, 0.12))',
+        'gradient-purple': 'linear-gradient(135deg, #5E3EFF 0%, #5E3EFF 100%)',
+        'gradient-dark': 'linear-gradient(180deg, #0A0E2E 0%, #0A0E2E 100%)',
       },
       keyframes: {
         'accordion-down': {
@@ -94,13 +119,13 @@ const config: Config = {
           '0%, 100%': { transform: 'translateY(0px)' },
           '50%': { transform: 'translateY(-10px)' },
         },
-        'gradient-x': {
-          '0%, 100%': { 'background-position': '0% 50%' },
-          '50%': { 'background-position': '100% 50%' },
-        },
         'fade-in-up': {
           '0%': { opacity: '0', transform: 'translateY(20px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        twinkle: {
+          '0%, 100%': { opacity: '0.6' },
+          '50%': { opacity: '1' },
         },
       },
       animation: {
@@ -108,8 +133,8 @@ const config: Config = {
         'accordion-up': 'accordion-up 0.2s ease-out',
         shimmer: 'shimmer 2s linear infinite',
         float: 'float 3s ease-in-out infinite',
-        'gradient-x': 'gradient-x 15s ease infinite',
         'fade-in-up': 'fade-in-up 0.6s ease-out',
+        twinkle: 'twinkle 4s ease-in-out infinite',
       },
     },
   },

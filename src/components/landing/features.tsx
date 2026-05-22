@@ -2,77 +2,132 @@
 
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import {
-  Brain,
-  Heart,
-  Zap,
-  Trophy,
-  Users,
-  Sparkles,
-  type LucideIcon,
-} from 'lucide-react';
-import { Card } from '@/components/ui/card';
-
-type Feature = {
-  icon: LucideIcon;
-  titleKey: string;
-  descKey: string;
-  gradient: string;
-};
-
-const FEATURES: Feature[] = [
-  { icon: Brain, titleKey: 'feature1Title', descKey: 'feature1Desc', gradient: 'from-orange-500 to-amber-500' },
-  { icon: Heart, titleKey: 'feature2Title', descKey: 'feature2Desc', gradient: 'from-rose-500 to-orange-500' },
-  { icon: Zap, titleKey: 'feature3Title', descKey: 'feature3Desc', gradient: 'from-amber-500 to-yellow-500' },
-  { icon: Trophy, titleKey: 'feature4Title', descKey: 'feature4Desc', gradient: 'from-emerald-500 to-teal-500' },
-  { icon: Users, titleKey: 'feature5Title', descKey: 'feature5Desc', gradient: 'from-orange-600 to-rose-500' },
-  { icon: Sparkles, titleKey: 'feature6Title', descKey: 'feature6Desc', gradient: 'from-amber-600 to-orange-600' },
-];
+import { Brain, Heart, Zap, Trophy, Users, Sparkles, ArrowUpRight } from 'lucide-react';
 
 export function Features() {
   const t = useTranslations('landing');
 
   return (
-    <section id="features" className="py-32 relative overflow-hidden">
-      <div className="absolute inset-0 grid-pattern opacity-40" />
-      <div className="container relative">
+    <section id="features" className="py-24 md:py-32 bg-white">
+      <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center max-w-2xl mx-auto mb-20"
+          className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12"
         >
-          <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold uppercase tracking-wider mb-4">
-            Features
+          <div className="max-w-2xl">
+            <div className="text-xs font-bold uppercase tracking-widest text-sg-purple mb-4">
+              / what we offer
+            </div>
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-sg-dark leading-[1.05]">
+              Everything a founder needs,<br />
+              <span className="font-serif italic font-normal text-sg-purple">in one place.</span>
+            </h2>
           </div>
-          <h2 className="font-display text-5xl md:text-6xl tracking-tight">
-            {t('featuresTitle')}
-          </h2>
-          <p className="mt-6 text-lg text-muted-foreground leading-relaxed">{t('featuresSubtitle')}</p>
+          <p className="text-base text-sg-dark/60 max-w-sm">{t('featuresSubtitle')}</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {FEATURES.map((f, i) => (
-            <motion.div
-              key={f.titleKey}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: i * 0.08 }}
-            >
-              <Card className="group relative p-7 h-full overflow-hidden border-border/40 hover:border-primary/40 transition-all duration-500 hover:-translate-y-1 soft-shadow hover:elevated-shadow">
-                <div className={`absolute inset-0 bg-gradient-to-br ${f.gradient} opacity-0 group-hover:opacity-[0.03] transition-opacity duration-500`} />
-                <div className={`relative w-12 h-12 rounded-xl bg-gradient-to-br ${f.gradient} flex items-center justify-center mb-5 soft-shadow group-hover:scale-110 transition-transform duration-500`}>
-                  <f.icon className="w-6 h-6 text-white" />
-                </div>
-                <h3 className="font-display text-2xl mb-3 tracking-tight">{t(f.titleKey)}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{t(f.descKey)}</p>
-              </Card>
-            </motion.div>
-          ))}
+        {/* Bento grid */}
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-4 md:auto-rows-[180px]">
+          {/* Card 1 — large, purple */}
+          <BentoCard
+            className="md:col-span-3 md:row-span-2 bg-sg-purple text-white"
+            icon={Brain}
+            title={t('feature1Title')}
+            desc={t('feature1Desc')}
+            big
+          />
+
+          {/* Card 2 */}
+          <BentoCard
+            className="md:col-span-3 bg-white border border-sg-dark/10"
+            icon={Heart}
+            title={t('feature2Title')}
+            desc={t('feature2Desc')}
+          />
+
+          {/* Card 3 — dark */}
+          <BentoCard
+            className="md:col-span-3 bg-sg-dark text-white"
+            icon={Zap}
+            title={t('feature3Title')}
+            desc={t('feature3Desc')}
+          />
+
+          {/* Card 4 */}
+          <BentoCard
+            className="md:col-span-2 bg-white border border-sg-dark/10"
+            icon={Trophy}
+            title={t('feature4Title')}
+            desc={t('feature4Desc')}
+            compact
+          />
+
+          {/* Card 5 */}
+          <BentoCard
+            className="md:col-span-2 bg-white border border-sg-dark/10"
+            icon={Users}
+            title={t('feature5Title')}
+            desc={t('feature5Desc')}
+            compact
+          />
+
+          {/* Card 6 */}
+          <BentoCard
+            className="md:col-span-2 bg-sg-dark/[0.03] border border-sg-dark/10"
+            icon={Sparkles}
+            title={t('feature6Title')}
+            desc={t('feature6Desc')}
+            compact
+          />
         </div>
       </div>
     </section>
+  );
+}
+
+function BentoCard({
+  className = '',
+  icon: Icon,
+  title,
+  desc,
+  big = false,
+  compact = false,
+}: {
+  className?: string;
+  icon: React.ElementType;
+  title: string;
+  desc: string;
+  big?: boolean;
+  compact?: boolean;
+}) {
+  const isDark = className.includes('bg-sg-purple') || className.includes('bg-sg-dark');
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      className={`group relative rounded-3xl p-6 md:p-7 ${big ? 'flex flex-col justify-between' : ''} hover:-translate-y-1 transition-all duration-500 overflow-hidden ${className}`}
+    >
+      <div className={`flex items-start justify-between ${big ? '' : ''}`}>
+        <div className={`w-11 h-11 rounded-xl flex items-center justify-center ${isDark ? 'bg-white/15' : 'bg-sg-purple/10'}`}>
+          <Icon className={`w-5 h-5 ${isDark ? 'text-white' : 'text-sg-purple'}`} />
+        </div>
+        <ArrowUpRight className={`w-5 h-5 opacity-30 group-hover:opacity-100 group-hover:rotate-45 transition ${isDark ? 'text-white' : 'text-sg-dark'}`} />
+      </div>
+      <div className={big ? 'mt-auto' : 'mt-4'}>
+        <h3 className={`font-display ${big ? 'text-3xl md:text-4xl' : compact ? 'text-lg' : 'text-2xl'} font-bold leading-tight tracking-tight ${isDark ? 'text-white' : 'text-sg-dark'}`}>
+          {title}
+        </h3>
+        {!compact && (
+          <p className={`mt-3 text-sm leading-relaxed ${isDark ? 'text-white/75' : 'text-sg-dark/60'}`}>
+            {desc}
+          </p>
+        )}
+      </div>
+    </motion.div>
   );
 }

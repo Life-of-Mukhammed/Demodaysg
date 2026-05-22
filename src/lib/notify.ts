@@ -33,7 +33,7 @@ export async function notify(opts: {
           title: opts.title,
           body: opts.body || opts.title,
           ctaUrl: url,
-          ctaLabel: 'Open Founders School',
+          ctaLabel: 'Open Venture Buildings',
         }),
       }).catch((e) => console.error('[email] send failed:', e));
     }

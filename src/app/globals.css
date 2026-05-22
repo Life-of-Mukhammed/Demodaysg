@@ -4,49 +4,49 @@
 
 @layer base {
   :root {
-    /* Light Claude-style palette: warm cream backgrounds, deep ink text, terracotta accent */
-    --background: 36 33% 97%;        /* #faf7f2 — warm cream */
-    --foreground: 28 25% 13%;        /* #2a221b — deep ink */
-    --card: 0 0% 100%;               /* pure white card */
-    --card-foreground: 28 25% 13%;
+    /* startupgarage.uz palette — white base, vivid purple primary, deep indigo for dark sections */
+    --background: 0 0% 100%;          /* pure white */
+    --foreground: 232 65% 11%;        /* #0A0E2E — unified dark */
+    --card: 0 0% 100%;                /* white card */
+    --card-foreground: 232 65% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 28 25% 13%;
-    --primary: 16 75% 45%;           /* #c95830 — terracotta */
-    --primary-foreground: 36 33% 98%;
-    --secondary: 36 20% 94%;         /* #f1ece4 — soft cream */
-    --secondary-foreground: 28 25% 20%;
-    --muted: 36 20% 94%;
-    --muted-foreground: 28 12% 42%;  /* #71655a — muted brown */
-    --accent: 30 50% 92%;            /* #f1e6d6 — warm accent */
-    --accent-foreground: 16 75% 35%;
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 36 15% 88%;            /* subtle warm border */
-    --input: 36 15% 88%;
-    --ring: 16 75% 45%;
-    --radius: 0.75rem;
+    --popover-foreground: 232 65% 11%;
+    --primary: 250 100% 62%;          /* #5E3EFF — vivid SG purple */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 20% 96%;         /* #F1F2F8 — soft gray */
+    --secondary-foreground: 232 65% 11%;
+    --muted: 240 20% 96%;
+    --muted-foreground: 240 10% 45%;
+    --accent: 250 100% 62%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 15% 90%;
+    --input: 240 15% 90%;
+    --ring: 250 100% 62%;
+    --radius: 1rem;
   }
 
   .dark {
-    --background: 28 18% 8%;
-    --foreground: 36 25% 92%;
-    --card: 28 14% 11%;
-    --card-foreground: 36 25% 92%;
-    --popover: 28 14% 11%;
-    --popover-foreground: 36 25% 92%;
-    --primary: 16 80% 55%;
-    --primary-foreground: 28 18% 8%;
-    --secondary: 28 10% 16%;
-    --secondary-foreground: 36 25% 92%;
-    --muted: 28 10% 16%;
-    --muted-foreground: 30 10% 60%;
-    --accent: 28 14% 18%;
-    --accent-foreground: 16 80% 70%;
-    --destructive: 0 65% 50%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 28 10% 20%;
-    --input: 28 10% 20%;
-    --ring: 16 80% 55%;
+    --background: 250 50% 8%;
+    --foreground: 0 0% 100%;
+    --card: 250 50% 12%;
+    --card-foreground: 0 0% 100%;
+    --popover: 250 50% 12%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 250 100% 70%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 250 40% 16%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 250 30% 20%;
+    --muted-foreground: 240 15% 70%;
+    --accent: 250 100% 70%;
+    --accent-foreground: 250 50% 8%;
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 250 30% 22%;
+    --input: 250 30% 22%;
+    --ring: 250 100% 70%;
   }
 
   * {
@@ -62,71 +62,115 @@
     @apply scroll-smooth;
   }
 
-  /* Selection */
   ::selection {
-    @apply bg-primary/20 text-foreground;
+    background-color: rgba(94, 62, 255, 0.25);
+    color: inherit;
   }
 }
 
 @layer components {
   .glass {
-    @apply backdrop-blur-xl bg-white/70 dark:bg-white/5 border border-border/40;
+    @apply backdrop-blur-xl bg-white/70 border border-black/5;
+  }
+
+  .glass-card {
+    @apply backdrop-blur-xl bg-white border border-black/5;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.04);
   }
 
   .soft-shadow {
-    box-shadow: 0 1px 2px 0 rgba(28, 25, 23, 0.04), 0 1px 3px 0 rgba(28, 25, 23, 0.06);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.04);
   }
 
   .elevated-shadow {
-    box-shadow: 0 1px 2px rgba(28, 25, 23, 0.04), 0 4px 12px rgba(28, 25, 23, 0.06), 0 16px 32px -8px rgba(28, 25, 23, 0.08);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04), 0 12px 32px rgba(0, 0, 0, 0.08), 0 24px 48px -8px rgba(94, 62, 255, 0.2);
   }
 
   .glow {
-    box-shadow: 0 0 60px 0 rgba(201, 88, 48, 0.25);
+    box-shadow: 0 0 60px 0 rgba(94, 62, 255, 0.4);
   }
 
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-orange-700 via-orange-600 to-amber-600;
+    color: #5E3EFF;
   }
 
-  .text-gradient-warm {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-600 via-orange-600 to-rose-600;
+  .text-display {
+    color: #5E3EFF;
+  }
+
+  /* Big rounded purple block, like SG hero */
+  .sg-block {
+    background-color: #5E3EFF;
+    border-radius: 32px;
+  }
+
+  /* Dark indigo block — uniform dark color */
+  .sg-dark-block {
+    background-color: #0A0E2E;
+    border-radius: 32px;
+  }
+
+  /* "S" watermark using mask */
+  .sg-watermark {
+    position: relative;
+    overflow: hidden;
+  }
+  .sg-watermark::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M150 50H80c-11 0-20 9-20 20v10c0 11 9 20 20 20h40c11 0 20 9 20 20v10c0 11-9 20-20 20H60' stroke='rgba(255,255,255,0.08)' stroke-width='18' stroke-linecap='square' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: 70% auto;
+    pointer-events: none;
   }
 
   .grid-pattern {
     background-image:
-      linear-gradient(to right, rgba(201, 88, 48, 0.04) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(201, 88, 48, 0.04) 1px, transparent 1px);
-    background-size: 56px 56px;
-  }
-
-  .dark .grid-pattern {
-    background-image:
-      linear-gradient(to right, rgba(252, 165, 91, 0.06) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(252, 165, 91, 0.06) 1px, transparent 1px);
+      linear-gradient(to right, rgba(94, 62, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(94, 62, 255, 0.04) 1px, transparent 1px);
+    background-size: 64px 64px;
   }
 
   .dot-pattern {
-    background-image: radial-gradient(circle, rgba(201, 88, 48, 0.08) 1px, transparent 1px);
-    background-size: 24px 24px;
+    background-image: radial-gradient(circle, rgba(94, 62, 255, 0.08) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  .stars-bg {
+    background-image:
+      radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.5), transparent),
+      radial-gradient(1.5px 1.5px at 60% 70%, rgba(255, 255, 255, 0.4), transparent),
+      radial-gradient(1px 1px at 80% 20%, rgba(255, 255, 255, 0.5), transparent),
+      radial-gradient(1.5px 1.5px at 30% 80%, rgba(255, 255, 255, 0.3), transparent),
+      radial-gradient(1px 1px at 90% 60%, rgba(255, 255, 255, 0.4), transparent);
+    background-size: 600px 600px;
+    background-repeat: repeat;
   }
 
   .scrollbar-thin {
     scrollbar-width: thin;
     scrollbar-color: hsl(var(--muted-foreground) / 0.3) transparent;
   }
-
   .scrollbar-thin::-webkit-scrollbar {
     width: 6px;
     height: 6px;
   }
-
   .scrollbar-thin::-webkit-scrollbar-thumb {
     @apply bg-muted-foreground/30 rounded-full;
   }
 }
 
 @layer utilities {
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-marquee {
+    animation: marquee 40s linear infinite;
+  }
+
   .animate-shimmer-bg {
     background: linear-gradient(
       to right,
@@ -138,13 +182,7 @@
     animation: shimmer 2s linear infinite;
   }
 
-  .bg-cream-gradient {
-    background: linear-gradient(180deg, #faf7f2 0%, #f5f0e6 100%);
-  }
-
-  .bg-warm-gradient {
-    background: radial-gradient(ellipse at top, rgba(251, 191, 36, 0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at bottom right, rgba(201, 88, 48, 0.08) 0%, transparent 50%),
-                #faf7f2;
+  .font-display-tight {
+    letter-spacing: -0.02em;
   }
 }

@@ -24,7 +24,7 @@ export function Sidebar({ isAdmin, primaryRole }: { isAdmin?: boolean; primaryRo
           <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-amber-400 flex items-center justify-center soft-shadow">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
-          <span className="font-display text-lg tracking-tight">Founders School</span>
+          <span className="font-display text-lg tracking-tight">Venture Buildings</span>
         </Link>
       </div>
 
