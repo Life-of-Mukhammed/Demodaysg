@@ -17,12 +17,12 @@ export type NavItem = {
 };
 
 import {
-  LayoutDashboard, Rocket, Heart, Kanban, GraduationCap, Bell, Trophy, Newspaper, Settings, Shield,
-  User as UserIcon,
+  LayoutDashboard, Rocket, Kanban, Settings, Shield,
+  Users, FileText,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, ComponentType<any>> = {
-  LayoutDashboard, Rocket, Heart, Kanban, GraduationCap, Bell, Trophy, Newspaper, Settings, Shield, UserIcon,
+  LayoutDashboard, Rocket, Kanban, Settings, Shield, Users, FileText,
 };
 
 export function MobileSidebar({ items, role }: { items: NavItem[]; role?: string }) {
@@ -42,7 +42,7 @@ export function MobileSidebar({ items, role }: { items: NavItem[]; role?: string
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-amber-400 flex items-center justify-center soft-shadow">
               <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <span className="font-display text-lg tracking-tight">Venture Buildings</span>
+            <span className="font-display text-lg tracking-tight">Venture Builders</span>
           </Link>
         </div>
 

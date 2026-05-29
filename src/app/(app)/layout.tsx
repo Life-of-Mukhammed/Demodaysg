@@ -13,7 +13,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     where: { userId: user.id, read: false },
   });
 
-  const navItems = getNavItems(user.isAdmin, user.primaryRole);
+  const navItems = getNavItems(user.isAdmin);
 
   return (
     <div className="min-h-screen flex bg-background">

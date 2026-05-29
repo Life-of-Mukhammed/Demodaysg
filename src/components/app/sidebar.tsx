@@ -4,18 +4,18 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
-  LayoutDashboard, Rocket, Heart, Kanban, GraduationCap, Bell, Trophy, Newspaper, Settings, Shield, Sparkles,
-  User as UserIcon, type LucideIcon,
+  LayoutDashboard, Rocket, Kanban, Settings, Shield, Sparkles,
+  Users, FileText, type LucideIcon,
 } from 'lucide-react';
 import { getNavItems } from './nav-items';
 
 const ICON_MAP: Record<string, LucideIcon> = {
-  LayoutDashboard, Rocket, Heart, Kanban, GraduationCap, Bell, Trophy, Newspaper, Settings, Shield, UserIcon,
+  LayoutDashboard, Rocket, Kanban, Settings, Shield, Users, FileText,
 };
 
 export function Sidebar({ isAdmin, primaryRole }: { isAdmin?: boolean; primaryRole?: string }) {
   const pathname = usePathname();
-  const items = getNavItems(isAdmin, primaryRole);
+  const items = getNavItems(isAdmin);
 
   return (
     <aside className="hidden lg:flex flex-col w-64 border-r border-border/40 bg-secondary/40">
@@ -24,7 +24,7 @@ export function Sidebar({ isAdmin, primaryRole }: { isAdmin?: boolean; primaryRo
           <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-amber-400 flex items-center justify-center soft-shadow">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
-          <span className="font-display text-lg tracking-tight">Venture Buildings</span>
+          <span className="font-display text-lg tracking-tight">Venture Builders</span>
         </Link>
       </div>
 
