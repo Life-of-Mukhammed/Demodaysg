@@ -23,11 +23,11 @@ const serif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: 'Venture Buildings — AI Startup OS',
+  title: 'Venture Builders — AI Startup OS',
   description:
     "AI-powered startup operating system. Co-founder matching, sprint execution, mentor support, and investor readiness — all in one platform.",
   openGraph: {
-    title: 'Venture Buildings',
+    title: 'Venture Builders',
     description: 'AI startup operating system from idea to investment',
     type: 'website',
   },

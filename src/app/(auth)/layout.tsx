@@ -13,7 +13,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-orange-500 to-amber-400 flex items-center justify-center soft-shadow">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
-          <span className="font-display text-xl tracking-tight">Venture Buildings</span>
+          <span className="font-display text-xl tracking-tight">Venture Builders</span>
         </Link>
       </header>
 

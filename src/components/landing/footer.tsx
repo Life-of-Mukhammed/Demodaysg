@@ -21,7 +21,7 @@ export function Footer() {
                 </svg>
               </div>
               <span className="font-display text-lg font-bold uppercase tracking-tight text-sg-dark">
-                Venture Buildings
+                Venture Builders
               </span>
             </Link>
             <p className="mt-5 font-serif italic text-2xl text-sg-dark leading-snug max-w-md">
@@ -69,7 +69,7 @@ export function Footer() {
         </div>
 
         <div className="mt-16 pt-8 border-t border-sg-dark/10 flex flex-col md:flex-row justify-between gap-4 text-sm text-sg-dark/50">
-          <p>© {new Date().getFullYear()} Venture Buildings. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Venture Builders. All rights reserved.</p>
           <div className="flex gap-6">
             <Link href="/legal/terms" className="hover:text-sg-purple transition">Terms</Link>
             <Link href="/legal/privacy" className="hover:text-sg-purple transition">Privacy</Link>

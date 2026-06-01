@@ -30,7 +30,7 @@ export function Navbar() {
           <Link href="/" className="flex items-center gap-2.5 group shrink-0">
             <Logo />
             <span className="font-display text-sm font-bold tracking-tight uppercase text-sg-dark hidden sm:inline">
-              Venture Buildings
+              Venture Builders
             </span>
           </Link>
 

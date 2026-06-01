@@ -152,13 +152,13 @@ export async function FounderDashboard({ user }: { user: any }) {
 
           <Card className="soft-shadow">
             <CardContent className="p-4 space-y-1">
-              <Link href="/match" className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent/50 transition group">
+              <Link href="/programmers" className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent/50 transition group">
                 <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-rose-500/15 to-orange-500/15 flex items-center justify-center">
                   <Sparkles className="w-4 h-4 text-orange-600" />
                 </div>
                 <div className="flex-1">
                   <div className="text-sm font-medium">Dasturchi topish</div>
-                  <div className="text-[10px] text-muted-foreground">AI swipe matching</div>
+                  <div className="text-[10px] text-muted-foreground">Dasturchilar ro&apos;yxati</div>
                 </div>
                 <ArrowRight className="w-3 h-3 text-muted-foreground group-hover:text-primary" />
               </Link>
