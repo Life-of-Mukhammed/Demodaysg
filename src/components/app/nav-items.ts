@@ -7,6 +7,7 @@ export function getNavItems(isAdmin?: boolean): SidebarNavItem[] {
     { href: '/applications', iconName: 'FileText', label: 'Applications' },
     { href: '/workspace', iconName: 'Kanban', label: 'Workspace' },
     { href: '/startups', iconName: 'Rocket', label: 'Startups' },
+    { href: '/courses', iconName: 'BookOpen', label: 'Kurslar' },
     { href: '/settings', iconName: 'Settings', label: 'Settings' },
   ];
   return [

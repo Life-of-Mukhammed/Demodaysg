@@ -157,7 +157,7 @@ export async function FounderDashboard({ user }: { user: any }) {
                   <Sparkles className="w-4 h-4 text-orange-600" />
                 </div>
                 <div className="flex-1">
-                  <div className="text-sm font-medium">Mutaxassis topish</div>
+                  <div className="text-sm font-medium">Dasturchi topish</div>
                   <div className="text-[10px] text-muted-foreground">AI swipe matching</div>
                 </div>
                 <ArrowRight className="w-3 h-3 text-muted-foreground group-hover:text-primary" />

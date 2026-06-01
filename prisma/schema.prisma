@@ -227,6 +227,7 @@ model Startup {
   teamSize        Int          @default(1)
   stage           StartupStage @default(IDEA)
   sector          Sector       @default(OTHER)
+  sectors         Sector[]
   location        String?
   fundraising     String?
   equityOffered   Float?

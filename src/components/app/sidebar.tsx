@@ -5,12 +5,12 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import {
   LayoutDashboard, Rocket, Kanban, Settings, Shield, Sparkles,
-  Users, FileText, type LucideIcon,
+  Users, FileText, BookOpen, type LucideIcon,
 } from 'lucide-react';
 import { getNavItems } from './nav-items';
 
 const ICON_MAP: Record<string, LucideIcon> = {
-  LayoutDashboard, Rocket, Kanban, Settings, Shield, Users, FileText,
+  LayoutDashboard, Rocket, Kanban, Settings, Shield, Users, FileText, BookOpen,
 };
 
 export function Sidebar({ isAdmin, primaryRole }: { isAdmin?: boolean; primaryRole?: string }) {

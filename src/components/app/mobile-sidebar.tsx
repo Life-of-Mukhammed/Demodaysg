@@ -18,11 +18,11 @@ export type NavItem = {
 
 import {
   LayoutDashboard, Rocket, Kanban, Settings, Shield,
-  Users, FileText,
+  Users, FileText, BookOpen,
 } from 'lucide-react';
 
 const ICON_MAP: Record<string, ComponentType<any>> = {
-  LayoutDashboard, Rocket, Kanban, Settings, Shield, Users, FileText,
+  LayoutDashboard, Rocket, Kanban, Settings, Shield, Users, FileText, BookOpen,
 };
 
 export function MobileSidebar({ items, role }: { items: NavItem[]; role?: string }) {

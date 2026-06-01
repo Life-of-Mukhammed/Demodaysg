@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import { getCurrentUser } from '@/lib/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -63,8 +64,12 @@ export default async function StartupPage({ params }: { params: Promise<{ id: st
         </div>
         <div className="bg-card p-6 -mt-8 relative">
           <div className="flex items-start gap-4">
-            <div className="w-20 h-20 rounded-2xl border-4 border-card bg-card flex items-center justify-center font-display text-3xl soft-shadow">
-              {startup.name[0]?.toUpperCase()}
+            <div className="w-20 h-20 rounded-2xl border-4 border-card bg-card flex items-center justify-center font-display text-3xl soft-shadow overflow-hidden relative">
+              {startup.logoUrl ? (
+                <Image src={startup.logoUrl} alt={startup.name} fill className="object-cover" />
+              ) : (
+                startup.name[0]?.toUpperCase()
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <h1 className="font-display text-4xl tracking-tight">{startup.name}</h1>

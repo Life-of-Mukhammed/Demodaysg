@@ -1,10 +1,12 @@
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Users, Sparkles, MapPin, Github, Linkedin, Globe } from 'lucide-react';
+import { Users, Sparkles, MapPin, Github, Linkedin, Globe, UserPlus, ChevronRight } from 'lucide-react';
 import { scoreColor } from '@/lib/utils';
 
 export default async function ProgrammersPage() {
@@ -19,18 +21,54 @@ export default async function ProgrammersPage() {
     orderBy: { aiScore: 'desc' },
   });
 
+  const myProfile = user.primaryRole === 'SPECIALIST'
+    ? await prisma.specialistProfile.findUnique({ where: { userId: user.id } })
+    : null;
+
   return (
     <div className="container max-w-6xl py-8 space-y-8">
-      <div className="space-y-1">
-        <div className="flex items-center gap-2">
-          <Users className="w-5 h-5 text-primary" />
-          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Dasturchilar</span>
+      <div className="flex items-start justify-between">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <Users className="w-5 h-5 text-primary" />
+            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Dasturchilar</span>
+          </div>
+          <h1 className="font-display text-4xl tracking-tight">Programmers</h1>
+          <p className="text-muted-foreground">
+            {profiles.length} ta dasturchi startupga qo&apos;shilishga tayyor
+          </p>
         </div>
-        <h1 className="font-display text-4xl tracking-tight">Programmers</h1>
-        <p className="text-muted-foreground">
-          {profiles.length} ta dasturchi startupga qo'shilishga tayyor
-        </p>
+        {user.primaryRole === 'SPECIALIST' && (
+          <Link href="/profile/specialist">
+            <Button variant={myProfile ? 'outline' : 'glow'} className="rounded-full gap-2">
+              <UserPlus className="w-4 h-4" />
+              {myProfile ? 'Profilni tahrirlash' : 'Nomzodingizni qo\'ying'}
+            </Button>
+          </Link>
+        )}
       </div>
+
+      {/* CTA for non-specialists */}
+      {user.primaryRole !== 'SPECIALIST' && (
+        <Card className="soft-shadow bg-gradient-to-br from-violet-500/5 via-fuchsia-500/5 to-pink-500/5 border-violet-500/20">
+          <CardContent className="p-5 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center">
+                <UserPlus className="w-6 h-6 text-violet-600" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm">Dasturchi sifatida ro&apos;yxatdan o&apos;ting</h4>
+                <p className="text-xs text-muted-foreground mt-0.5">Profilingizni to&apos;ldiring va startuplarga qo&apos;shiling</p>
+              </div>
+            </div>
+            <Link href="/settings">
+              <Button variant="outline" size="sm" className="rounded-full gap-1">
+                Boshlash <ChevronRight className="w-3 h-3" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+      )}
 
       {profiles.length === 0 ? (
         <Card className="soft-shadow">

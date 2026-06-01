@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -9,10 +9,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Progress } from '@/components/ui/progress';
-import { ArrowRight, ArrowLeft, Loader2, Sparkles, Rocket } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Loader2, Sparkles, Rocket, Upload, X } from 'lucide-react';
+import { storage } from '@/lib/firebase/client';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import Image from 'next/image';
 
 const STAGES = ['IDEA', 'MVP', 'EARLY_TRACTION', 'REVENUE', 'SCALING'];
 const SECTORS = ['FINTECH', 'EDTECH', 'HEALTHTECH', 'AI', 'WEB3', 'SAAS', 'ECOMMERCE', 'MARKETPLACE', 'GAMING', 'DEEPTECH', 'OTHER'];
@@ -25,14 +27,14 @@ type Form = {
   targetAudience: string;
   revenueModel: string;
   competitors: string;
-  hasMVP: boolean;
   teamSize: number;
   stage: string;
-  sector: string;
+  sectors: string[];
   location: string;
   equityOffered: string;
   fundraising: string;
   cofounderNeeded: string[];
+  logoUrl: string;
 };
 
 const initial: Form = {
@@ -43,14 +45,14 @@ const initial: Form = {
   targetAudience: '',
   revenueModel: '',
   competitors: '',
-  hasMVP: false,
   teamSize: 1,
   stage: 'IDEA',
-  sector: 'OTHER',
+  sectors: [],
   location: '',
   equityOffered: '',
   fundraising: '',
   cofounderNeeded: [],
+  logoUrl: '',
 };
 
 export default function NewStartupPage() {
@@ -58,26 +60,114 @@ export default function NewStartupPage() {
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<Form>(initial);
   const [submitting, setSubmitting] = useState(false);
+  const [logoPreview, setLogoPreview] = useState<string>('');
+  const [logoUploading, setLogoUploading] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   const update = <K extends keyof Form>(k: K, v: Form[K]) => setForm((s) => ({ ...s, [k]: v }));
+
+  const toggleSector = (s: string) => {
+    setForm((prev) => ({
+      ...prev,
+      sectors: prev.sectors.includes(s)
+        ? prev.sectors.filter((x) => x !== s)
+        : [...prev.sectors, s],
+    }));
+  };
+
+  const handleLogoFile = async (file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => setLogoPreview(e.target?.result as string);
+    reader.readAsDataURL(file);
+
+    setLogoUploading(true);
+    try {
+      const storageInstance = storage();
+      if (storageInstance) {
+        const logoRef = ref(storageInstance, `startup-logos/${Date.now()}-${file.name}`);
+        await uploadBytes(logoRef, file);
+        const url = await getDownloadURL(logoRef);
+        update('logoUrl', url);
+      }
+    } catch {
+      toast.error('Logo yuklashda xato');
+    } finally {
+      setLogoUploading(false);
+    }
+  };
 
   const steps = [
     {
       title: 'Asoslari',
-      subtitle: 'Startup haqida asosiy ma\'lumot',
+      subtitle: "Startup haqida asosiy ma'lumot",
       content: (
         <>
+          {/* Logo upload */}
+          <div className="flex items-center gap-4 mb-2">
+            <div
+              className="w-20 h-20 rounded-2xl border-2 border-dashed border-border/60 flex items-center justify-center cursor-pointer hover:border-primary/50 transition overflow-hidden bg-accent/20 relative"
+              onClick={() => logoInputRef.current?.click()}
+            >
+              {logoPreview ? (
+                <Image src={logoPreview} alt="logo" fill className="object-cover rounded-2xl" />
+              ) : logoUploading ? (
+                <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+              ) : (
+                <Upload className="w-6 h-6 text-muted-foreground" />
+              )}
+            </div>
+            <div>
+              <Label className="mb-1 block">Logo</Label>
+              <Button variant="outline" size="sm" type="button" onClick={() => logoInputRef.current?.click()} disabled={logoUploading}>
+                {logoUploading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Upload className="w-3 h-3" />}
+                {logoUploading ? 'Yuklanmoqda...' : 'Logo yuklash'}
+              </Button>
+              {form.logoUrl && (
+                <button
+                  type="button"
+                  className="ml-2 text-xs text-rose-500 hover:underline"
+                  onClick={() => { update('logoUrl', ''); setLogoPreview(''); }}
+                >
+                  <X className="w-3 h-3 inline" /> Olib tashlash
+                </button>
+              )}
+              <p className="text-[10px] text-muted-foreground mt-1">JPG, PNG · Max 2MB</p>
+            </div>
+            <input
+              ref={logoInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) handleLogoFile(file);
+              }}
+            />
+          </div>
+
           <Field label="Startup nomi" required>
             <Input value={form.name} onChange={(e) => update('name', e.target.value)} placeholder="Ajoyib Startup" />
           </Field>
           <Field label="Qisqacha pitch" hint="1-2 jumlada">
             <Textarea value={form.pitch} onChange={(e) => update('pitch', e.target.value)} rows={2} placeholder="Biz X uchun Y qilamiz, chunki Z" />
           </Field>
-          <Field label="Sektor">
-            <Select value={form.sector} onValueChange={(v) => update('sector', v)}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>{SECTORS.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-            </Select>
+          <Field label="Soha">
+            <div className="flex flex-wrap gap-2 mt-1">
+              {SECTORS.map((s) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => toggleSector(s)}
+                  className={`text-xs px-3 py-1.5 rounded-full border transition ${
+                    form.sectors.includes(s)
+                      ? 'bg-gradient-to-r from-orange-500 to-amber-500 text-white border-transparent'
+                      : 'border-border hover:bg-accent'
+                  }`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
           </Field>
           <Field label="Joylashuv">
             <Input value={form.location} onChange={(e) => update('location', e.target.value)} placeholder="Tashkent, UZ" />
@@ -130,20 +220,13 @@ export default function NewStartupPage() {
               <SelectContent>{STAGES.map((s) => <SelectItem key={s} value={s}>{s.replace('_', ' ')}</SelectItem>)}</SelectContent>
             </Select>
           </Field>
-          <div className="flex items-center justify-between p-4 rounded-lg border border-border/50">
-            <div>
-              <Label>MVP bormi?</Label>
-              <p className="text-xs text-muted-foreground mt-0.5">Ishlovchi prototip mavjud</p>
-            </div>
-            <Switch checked={form.hasMVP} onCheckedChange={(v) => update('hasMVP', v)} />
-          </div>
           <Field label="Jamoa hajmi">
             <Input type="number" min={1} value={form.teamSize} onChange={(e) => update('teamSize', +e.target.value)} />
           </Field>
           <div className="p-4 rounded-lg bg-accent/30 border border-border/40">
-            <p className="text-sm font-medium">💡 Mutaxassis kerakmi?</p>
+            <p className="text-sm font-medium">💡 Dasturchi kerakmi?</p>
             <p className="text-xs text-muted-foreground mt-1">
-              Startup yaratilgandan keyin startup sahifasida <strong>"Vakansiya joylash"</strong> tugmasi orqali kerakli mutaxassislarni qidiring.
+              Startup yaratilgandan keyin startup sahifasida <strong>"Vakansiya joylash"</strong> tugmasi orqali kerakli dasturchilarni qidiring.
             </p>
           </div>
         </>
@@ -166,12 +249,13 @@ export default function NewStartupPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...form,
+          sector: form.sectors[0] || 'OTHER',
           equityOffered: form.equityOffered ? parseFloat(form.equityOffered) : null,
         }),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
-      toast.success('Startup yaratildi! AI baholashga jo\'natildi.');
+      toast.success("Startup yaratildi! AI baholashga jo'natildi.");
       router.push(`/startups/${json.id}`);
     } catch (err: any) {
       toast.error(err.message);

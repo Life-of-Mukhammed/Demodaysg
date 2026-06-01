@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
@@ -82,8 +83,12 @@ export default async function StartupsPage() {
 
                   <CardContent className="p-5">
                     <div className="flex items-start gap-3 -mt-9 mb-4">
-                      <div className="w-14 h-14 rounded-xl border-4 border-card bg-card flex items-center justify-center font-display text-2xl soft-shadow">
-                        {s.name[0]?.toUpperCase()}
+                      <div className="w-14 h-14 rounded-xl border-4 border-card bg-card flex items-center justify-center font-display text-2xl soft-shadow overflow-hidden relative">
+                        {s.logoUrl ? (
+                          <Image src={s.logoUrl} alt={s.name} fill className="object-cover" />
+                        ) : (
+                          s.name[0]?.toUpperCase()
+                        )}
                       </div>
                     </div>
 

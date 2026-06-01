@@ -35,14 +35,16 @@ export async function POST(req: Request) {
         targetAudience: body.targetAudience,
         revenueModel: body.revenueModel,
         competitors: body.competitors,
-        hasMVP: body.hasMVP,
+        hasMVP: false,
         teamSize: body.teamSize,
         stage: body.stage,
-        sector: body.sector,
+        sector: body.sector || 'OTHER',
+        sectors: body.sectors || [],
         location: body.location,
         equityOffered: body.equityOffered,
         fundraising: body.fundraising,
         cofounderNeeded: body.cofounderNeeded,
+        logoUrl: body.logoUrl || null,
       },
     });
 
