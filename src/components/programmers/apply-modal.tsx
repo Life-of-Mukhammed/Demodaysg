@@ -5,18 +5,36 @@ import { toast } from 'sonner';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { UserPlus, Upload, Loader2, Sparkles, X, Plus, ChevronRight, Check } from 'lucide-react';
+import {
+  UserPlus, Upload, Loader2, Sparkles, X, Plus, ChevronRight, Check,
+  Code2, Layout, Server, Smartphone, Cpu, Palette, Package,
+} from 'lucide-react';
 import { storage } from '@/lib/firebase/client';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const ROLES = ['CTO', 'DEVELOPER', 'DESIGNER', 'SALES', 'MARKETING', 'PRODUCT_MANAGER', 'AI_ENGINEER', 'FINANCE', 'OPERATIONS', 'BIZDEV'];
 const LEVELS = ['JUNIOR', 'MIDDLE', 'SENIOR', 'LEAD'];
+
+const DEV_TYPES = [
+  { label: 'Frontend', desc: 'React, Vue, Angular...', icon: Layout, primaryRole: 'DEVELOPER' },
+  { label: 'Backend', desc: 'Node.js, Python, Go...', icon: Server, primaryRole: 'DEVELOPER' },
+  { label: 'Fullstack', desc: 'Frontend + Backend', icon: Code2, primaryRole: 'DEVELOPER' },
+  { label: 'Mobile', desc: 'iOS, Android, Flutter...', icon: Smartphone, primaryRole: 'DEVELOPER' },
+  { label: 'AI/ML', desc: 'Machine Learning, LLM...', icon: Cpu, primaryRole: 'AI_ENGINEER' },
+  { label: 'Designer', desc: 'UI/UX, Figma...', icon: Palette, primaryRole: 'DESIGNER' },
+  { label: 'Product Manager', desc: 'Product, Roadmap...', icon: Package, primaryRole: 'PRODUCT_MANAGER' },
+];
+
+type WorkExp = { company: string; position: string; duration: string; projects: string[] };
+
+function emptyExp(): WorkExp {
+  return { company: '', position: '', duration: '', projects: [''] };
+}
 
 export function ProgrammerApplyButton({ hasProfile }: { hasProfile: boolean }) {
   const [open, setOpen] = useState(false);
@@ -57,8 +75,8 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
+    developerType: '',
     displayName: '',
-    bio: '',
     location: '',
     experienceYears: 0,
     level: 'MIDDLE',
@@ -69,6 +87,7 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     portfolio: '',
     available: true,
     avatarUrl: '',
+    workExperience: [emptyExp()] as WorkExp[],
   });
 
   const toggleRole = (r: string) => setForm((s) => ({
@@ -81,6 +100,42 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     setForm((s) => ({ ...s, skills: [...new Set([...s.skills, skillInput.trim()])] }));
     setSkillInput('');
   };
+
+  const selectDevType = (dt: typeof DEV_TYPES[0]) => {
+    setForm((s) => ({
+      ...s,
+      developerType: dt.label,
+      primaryRoles: s.primaryRoles.includes(dt.primaryRole) ? s.primaryRoles : [dt.primaryRole, ...s.primaryRoles],
+    }));
+  };
+
+  /* Work experience helpers */
+  const addExp = () => setForm((s) => ({ ...s, workExperience: [...s.workExperience, emptyExp()] }));
+  const removeExp = (i: number) => setForm((s) => ({ ...s, workExperience: s.workExperience.filter((_, idx) => idx !== i) }));
+  const updateExp = (i: number, field: keyof WorkExp, value: any) =>
+    setForm((s) => {
+      const we = [...s.workExperience];
+      (we[i] as any)[field] = value;
+      return { ...s, workExperience: we };
+    });
+  const addProject = (i: number) =>
+    setForm((s) => {
+      const we = [...s.workExperience];
+      we[i] = { ...we[i], projects: [...we[i].projects, ''] };
+      return { ...s, workExperience: we };
+    });
+  const removeProject = (ei: number, pi: number) =>
+    setForm((s) => {
+      const we = [...s.workExperience];
+      we[ei] = { ...we[ei], projects: we[ei].projects.filter((_, idx) => idx !== pi) };
+      return { ...s, workExperience: we };
+    });
+  const updateProject = (ei: number, pi: number, value: string) =>
+    setForm((s) => {
+      const we = [...s.workExperience];
+      we[ei].projects[pi] = value;
+      return { ...s, workExperience: we };
+    });
 
   const handleAvatar = async (file: File) => {
     const reader = new FileReader();
@@ -109,7 +164,6 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 
     setSaving(true);
     try {
-      // Update display name
       if (form.displayName) {
         await fetch('/api/profile/name', {
           method: 'POST',
@@ -118,12 +172,11 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
         });
       }
 
-      // Save specialist profile
       const res = await fetch('/api/profile/specialist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          bio: form.bio,
+          developerType: form.developerType,
           location: form.location,
           experienceYears: form.experienceYears,
           level: form.level,
@@ -136,6 +189,7 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
           available: form.available,
           englishLevel: 'B1',
           resumeText: '',
+          workExperience: form.workExperience,
         }),
       });
 
@@ -151,8 +205,44 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   }
 
   const steps = [
+    /* Step 0 – Developer type */
     {
-      title: 'Rasm va ism',
+      title: "Qaysi turdagi mutaxassiss?",
+      content: (
+        <div className="grid grid-cols-2 gap-3">
+          {DEV_TYPES.map((dt) => {
+            const Icon = dt.icon;
+            const selected = form.developerType === dt.label;
+            return (
+              <button
+                key={dt.label}
+                type="button"
+                onClick={() => selectDevType(dt)}
+                className={`flex flex-col items-start gap-2 p-4 rounded-xl border-2 transition-all text-left ${
+                  selected
+                    ? 'border-violet-500 bg-violet-500/8'
+                    : 'border-border hover:border-violet-300 hover:bg-accent/40'
+                }`}
+              >
+                <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${selected ? 'bg-violet-500 text-white' : 'bg-accent'}`}>
+                  <Icon className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="font-semibold text-sm">{dt.label}</div>
+                  <div className="text-[11px] text-muted-foreground">{dt.desc}</div>
+                </div>
+                {selected && <Check className="w-4 h-4 text-violet-500 ml-auto" />}
+              </button>
+            );
+          })}
+        </div>
+      ),
+      canNext: () => form.developerType.length > 0,
+    },
+
+    /* Step 1 – Name, photo, work experience */
+    {
+      title: 'Rasm, ism va tajriba',
       content: (
         <div className="space-y-5">
           {/* Avatar */}
@@ -162,7 +252,7 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
               onClick={() => fileRef.current?.click()}
             >
               {avatarPreview ? (
-                <img src={avatarPreview} alt="avatar" className="w-full h-full object-cover" />
+                <img src={avatarPreview} alt="avatar" className="w-full h-full object-cover rounded-full" />
               ) : avatarUploading ? (
                 <Loader2 className="w-7 h-7 animate-spin text-muted-foreground" />
               ) : (
@@ -180,10 +270,7 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
             <Label>Ism Familiya *</Label>
             <Input value={form.displayName} onChange={(e) => setForm({ ...form, displayName: e.target.value })} placeholder="Ali Valiyev" />
           </div>
-          <div className="space-y-2">
-            <Label>Haqida (bio)</Label>
-            <Textarea rows={3} value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} placeholder="Men fullstack developer, 3 yillik tajribam bor..." />
-          </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
               <Label>Joylashuv</Label>
@@ -194,6 +281,7 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
               <Input type="number" min={0} value={form.experienceYears} onChange={(e) => setForm({ ...form, experienceYears: +e.target.value })} />
             </div>
           </div>
+
           <div className="space-y-2">
             <Label>Daraja</Label>
             <Select value={form.level} onValueChange={(v) => setForm({ ...form, level: v })}>
@@ -201,12 +289,93 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
               <SelectContent>{LEVELS.map((l) => <SelectItem key={l} value={l}>{l}</SelectItem>)}</SelectContent>
             </Select>
           </div>
+
+          {/* Work Experience */}
+          <div>
+            <Label className="mb-3 block">Ish tajribasi</Label>
+            <div className="space-y-4">
+              {form.workExperience.map((exp, ei) => (
+                <div key={ei} className="relative border border-border/50 rounded-xl p-4 shadow-sm space-y-3">
+                  {ei > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => removeExp(ei)}
+                      className="absolute top-3 right-3 w-6 h-6 rounded-full bg-destructive/10 hover:bg-destructive/20 flex items-center justify-center transition"
+                    >
+                      <X className="w-3.5 h-3.5 text-destructive" />
+                    </button>
+                  )}
+                  <div className="space-y-2">
+                    <Label className="text-xs">Kompaniya nomi</Label>
+                    <Input
+                      value={exp.company}
+                      onChange={(e) => updateExp(ei, 'company', e.target.value)}
+                      placeholder="Masalan: Startup Garage"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Lavozim</Label>
+                    <Input
+                      value={exp.position}
+                      onChange={(e) => updateExp(ei, 'position', e.target.value)}
+                      placeholder="Masalan: Fullstack Developer"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Muddat</Label>
+                    <Input
+                      value={exp.duration}
+                      onChange={(e) => updateExp(ei, 'duration', e.target.value)}
+                      placeholder="Masalan: Yan 2024 – Hozir"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs">Qilgan ishlar / Loyihalar</Label>
+                    {exp.projects.map((proj, pi) => (
+                      <div key={pi} className="flex gap-2 items-center">
+                        <Input
+                          value={proj}
+                          onChange={(e) => updateProject(ei, pi, e.target.value)}
+                          placeholder="Masalan: Admin panel yaratdim"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => addProject(ei)}
+                          className="w-8 h-8 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 flex items-center justify-center text-emerald-600 transition shrink-0"
+                        >
+                          <Plus className="w-4 h-4" />
+                        </button>
+                        {pi > 0 && (
+                          <button
+                            type="button"
+                            onClick={() => removeProject(ei, pi)}
+                            className="w-8 h-8 rounded-lg bg-destructive/10 hover:bg-destructive/20 flex items-center justify-center text-destructive transition shrink-0"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={addExp}
+              className="w-full mt-3 py-2.5 rounded-xl border-2 border-dashed border-border/60 hover:border-violet-400/60 text-sm text-muted-foreground hover:text-violet-600 transition flex items-center justify-center gap-2"
+            >
+              <Plus className="w-4 h-4" /> Ish joyi qo&apos;shish
+            </button>
+          </div>
         </div>
       ),
       canNext: () => form.displayName.trim().length > 0,
     },
+
+    /* Step 2 – Roles & Skills */
     {
-      title: 'Rol va ko\'nikmalar',
+      title: "Rol va ko'nikmalar",
       content: (
         <div className="space-y-5">
           <div>
@@ -254,6 +423,8 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
       ),
       canNext: () => form.primaryRoles.length > 0,
     },
+
+    /* Step 3 – Links */
     {
       title: 'Linklar',
       content: (
@@ -295,7 +466,6 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
           </DialogTitle>
         </DialogHeader>
 
-        {/* Progress dots */}
         <div className="flex gap-1.5 mb-2">
           {steps.map((_, i) => (
             <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= step ? 'bg-violet-500' : 'bg-border'}`} />

@@ -18,6 +18,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const data = {
       bio: body.bio,
+      developerType: body.developerType,
       location: body.location,
       englishLevel: body.englishLevel,
       experienceYears: +body.experienceYears || 0,
@@ -30,6 +31,7 @@ export async function POST(req: Request) {
       portfolio: body.portfolio,
       twitter: body.twitter,
       resumeText: body.resumeText,
+      workExperience: body.workExperience,
       available: body.available,
     };
     const profile = await prisma.specialistProfile.upsert({

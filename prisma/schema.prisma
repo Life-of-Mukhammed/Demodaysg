@@ -173,6 +173,7 @@ model SpecialistProfile {
   userId          String           @unique
   user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   bio             String?          @db.Text
+  developerType   String?
   location        String?
   timezone        String?
   englishLevel    String?
@@ -188,6 +189,7 @@ model SpecialistProfile {
   resumeUrl       String?
   resumeText      String?          @db.Text
   workSamples     Json?
+  workExperience  Json?
   onchainCredits  Json?
   aiScore         Int?
   aiSummary       String?          @db.Text
@@ -237,6 +239,9 @@ model Startup {
   scoreMetrics    Json?
   aiFeedback      String?      @db.Text
   investorReady   InvestorReadiness @default(NOT_READY)
+  pitchDeckUrl    String?
+  pitchDeckName   String?
+  pitchDeckUploadedAt DateTime?
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
 
