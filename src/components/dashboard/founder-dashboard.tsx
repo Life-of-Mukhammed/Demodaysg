@@ -14,8 +14,6 @@ import {
   RefreshCw, Loader2, UserCircle2, X, Check,
 } from 'lucide-react';
 import { formatScore, scoreColor, scoreCategory, xpToNextLevel } from '@/lib/utils';
-import { storage } from '@/lib/firebase/client';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -145,21 +143,15 @@ function PitchDeckCard({ startup }: { startup: Startup }) {
   const handleUpload = async (file: File) => {
     setUploading(true);
     try {
-      const storageInstance = storage();
-      if (!storageInstance) throw new Error('Storage unavailable');
-      const fileRef2 = ref(storageInstance, `pitch-decks/${startup.id}/${Date.now()}-${file.name}`);
-      await uploadBytes(fileRef2, file);
-      const url = await getDownloadURL(fileRef2);
-
-      const res = await fetch('/api/startups/pitch-deck', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ startupId: startup.id, pitchDeckUrl: url, pitchDeckName: file.name }),
-      });
-      if (!res.ok) throw new Error('Saqlashda xato');
-      setDeckUrl(url);
-      setDeckName(file.name);
-      setDeckDate(new Date().toISOString());
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('startupId', startup.id);
+      const res = await fetch('/api/startups/pitch-deck', { method: 'POST', body: fd });
+      if (!res.ok) throw new Error((await res.json()).error || 'Yuklashda xato');
+      const updated = await res.json();
+      setDeckUrl(updated.pitchDeckUrl);
+      setDeckName(updated.pitchDeckName);
+      setDeckDate(updated.pitchDeckUploadedAt);
       toast.success('Pitch deck yuklandi!');
     } catch (e: any) {
       toast.error(e.message);

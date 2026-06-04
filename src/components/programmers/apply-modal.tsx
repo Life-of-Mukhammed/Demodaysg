@@ -6,7 +6,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,7 +16,6 @@ import {
 import { storage } from '@/lib/firebase/client';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
-const ROLES = ['CTO', 'DEVELOPER', 'DESIGNER', 'SALES', 'MARKETING', 'PRODUCT_MANAGER', 'AI_ENGINEER', 'FINANCE', 'OPERATIONS', 'BIZDEV'];
 const LEVELS = ['JUNIOR', 'MIDDLE', 'SENIOR', 'LEAD'];
 
 const DEV_TYPES = [
@@ -71,7 +69,6 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [saving, setSaving] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState('');
   const [avatarUploading, setAvatarUploading] = useState(false);
-  const [skillInput, setSkillInput] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
@@ -81,7 +78,6 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     experienceYears: 0,
     level: 'MIDDLE',
     primaryRoles: [] as string[],
-    skills: [] as string[],
     linkedin: '',
     github: '',
     portfolio: '',
@@ -89,17 +85,6 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     avatarUrl: '',
     workExperience: [emptyExp()] as WorkExp[],
   });
-
-  const toggleRole = (r: string) => setForm((s) => ({
-    ...s,
-    primaryRoles: s.primaryRoles.includes(r) ? s.primaryRoles.filter((x) => x !== r) : [...s.primaryRoles, r],
-  }));
-
-  const addSkill = () => {
-    if (!skillInput.trim()) return;
-    setForm((s) => ({ ...s, skills: [...new Set([...s.skills, skillInput.trim()])] }));
-    setSkillInput('');
-  };
 
   const selectDevType = (dt: typeof DEV_TYPES[0]) => {
     setForm((s) => ({
@@ -160,7 +145,6 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
 
   async function submit() {
     if (!form.displayName.trim()) { toast.error("Ism kiritish shart"); return; }
-    if (form.primaryRoles.length === 0) { toast.error("Kamida 1 ta rol tanlang"); return; }
 
     setSaving(true);
     try {
@@ -181,7 +165,7 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
           experienceYears: form.experienceYears,
           level: form.level,
           primaryRoles: form.primaryRoles,
-          skills: form.skills,
+          skills: [],
           sectors: [],
           linkedin: form.linkedin,
           github: form.github,
@@ -373,58 +357,7 @@ function ApplyModal({ open, onClose }: { open: boolean; onClose: () => void }) {
       canNext: () => form.displayName.trim().length > 0,
     },
 
-    /* Step 2 – Roles & Skills */
-    {
-      title: "Rol va ko'nikmalar",
-      content: (
-        <div className="space-y-5">
-          <div>
-            <Label className="mb-3 block">Rollar * (bir nechta tanlash mumkin)</Label>
-            <div className="flex flex-wrap gap-2">
-              {ROLES.map((r) => (
-                <button
-                  key={r}
-                  type="button"
-                  onClick={() => toggleRole(r)}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition ${
-                    form.primaryRoles.includes(r)
-                      ? 'bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white border-transparent'
-                      : 'border-border hover:bg-accent'
-                  }`}
-                >
-                  {form.primaryRoles.includes(r) && <Check className="w-3 h-3 inline mr-1" />}
-                  {r.replace('_', ' ')}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <Label className="mb-2 block">Ko&apos;nikmalar</Label>
-            <div className="flex gap-2">
-              <Input
-                value={skillInput}
-                onChange={(e) => setSkillInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addSkill())}
-                placeholder="React, Node.js, Python..."
-              />
-              <Button type="button" onClick={addSkill} variant="outline" size="icon"><Plus className="w-4 h-4" /></Button>
-            </div>
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              {form.skills.map((s) => (
-                <Badge key={s} variant="secondary" className="gap-1">
-                  {s}
-                  <button type="button" onClick={() => setForm((f) => ({ ...f, skills: f.skills.filter((x) => x !== s) }))}><X className="w-3 h-3" /></button>
-                </Badge>
-              ))}
-            </div>
-          </div>
-        </div>
-      ),
-      canNext: () => form.primaryRoles.length > 0,
-    },
-
-    /* Step 3 – Links */
+    /* Step 2 – Links */
     {
       title: 'Linklar',
       content: (
